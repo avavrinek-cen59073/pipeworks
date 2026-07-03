@@ -2,56 +2,93 @@
 
 ## Goal
 
-Understand prompts, current directory, paths, command structure, flags, and arguments.
+Understand where commands run, how paths work, and how command names, options, and arguments fit together.
 
 ## Why this matters
 
-Most terminal mistakes start with running the right command in the wrong directory or misunderstanding which text is the command and which text is data.
+A correct command in the wrong directory can fail or change the wrong files. Before learning complicated commands, you need to know how to answer "where am I?" and "what am I passing to this command?"
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 pwd
 ```
 
+You should now be inside the sandbox directory.
+
 ## Mental model
 
-Your shell has a current directory. Relative paths start there. Absolute paths start at the filesystem root `/`. Commands have a name, optional flags, and optional arguments.
+Your shell always has a current directory.
+
+- A relative path like `logs/auth.log` starts from the current directory.
+- An absolute path like `/Users/name/git/pipeworks/sandbox/logs/auth.log` starts from `/`.
+- `.` means the current directory.
+- `..` means the parent directory.
+
+A command line usually looks like this:
+
+```text
+command option argument
+```
+
+Example:
+
+```sh
+ls -l logs
+```
+
+- `ls` is the command.
+- `-l` is an option that changes the output format.
+- `logs` is the argument: the path to list.
 
 ## Commands introduced
 
-- `pwd`
-- `ls`
-- `cd`
-- `echo`
-- `printf`
+```sh
+pwd
+ls
+cd
+echo
+printf
+```
 
-## Exercise 1: Smallest useful version
+What they do:
 
-Show your current directory:
+- `pwd`: print working directory.
+- `ls PATH`: list a directory. Without `PATH`, it lists the current directory.
+- `cd PATH`: change the shell's current directory.
+- `echo TEXT`: print text with a newline. Useful, but less predictable than `printf`.
+- `printf FORMAT VALUES`: print formatted text. Use it when exact output matters.
+
+## Exercise 1: Ask where you are
+
+Run:
 
 ```sh
 pwd
 ```
 
-## Exercise 2: Add one option
+Do not just check that it prints something. Read the path. It should end in `sandbox`.
 
-List visible files in the sandbox:
+## Exercise 2: List current and child directories
+
+Run:
 
 ```sh
 ls
-```
-
-Then list one directory:
-
-```sh
 ls logs
 ```
 
-## Exercise 3: Combine with previous knowledge
+What changed:
 
-Move to `logs`, print the directory, then move back:
+- `ls` listed your current directory: the sandbox.
+- `ls logs` listed the `logs` directory inside the sandbox.
+
+## Exercise 3: Move, verify, move back
+
+Run:
 
 ```sh
 cd logs
@@ -60,42 +97,43 @@ cd ..
 pwd
 ```
 
-## Exercise 4: Realistic task
+What each path means:
 
-Save your current directory and a short note:
+- `cd logs` moves into the child directory named `logs`.
+- `cd ..` moves up one directory.
+- The two `pwd` commands prove where the shell is after each move.
+
+## Exercise 4: Save orientation notes
+
+Run:
 
 ```sh
 pwd > out/current-directory.txt
 printf 'I am practicing command structure.\n' >> out/current-directory.txt
-```
-
-Inspect the file:
-
-```sh
 cat out/current-directory.txt
 ```
 
+What to notice:
+
+- `>` writes a new file.
+- `>>` appends to an existing file.
+- `out/current-directory.txt` is a relative path from `sandbox`.
+
 ## Challenge
 
-Use one command to print the names of `logs`, `csv`, and `configs` on separate lines.
+Print the names `logs`, `csv`, and `configs` on separate lines using one command.
 
-## Common mistakes
+Hint: `printf` can print several values with one format string.
 
-- Typing the prompt symbol as part of the command.
-- Assuming `cd sandbox` works when you are already inside `sandbox`.
-- Using `echo` for precise output when `printf` is clearer.
+## When it goes wrong
 
-## GNU/Linux vs macOS notes
-
-The commands in this lesson behave the same for this use.
-
-## Bash vs zsh notes
-
-Basic navigation is the same in Bash and zsh.
+- If `cd logs` fails, run `pwd`. You may not be in `sandbox`.
+- If `out/current-directory.txt` is missing, check whether you wrote to `sandbox/out/` or to a different `out/` directory.
+- If you typed a prompt character like `$` or `%`, remove it. Prompts are not part of commands.
 
 ## Check yourself
 
-Confirm that `out/current-directory.txt` contains a path ending in `sandbox`.
+Confirm that `out/current-directory.txt` contains a path ending in `sandbox` and your note.
 
 ## Next lesson
 

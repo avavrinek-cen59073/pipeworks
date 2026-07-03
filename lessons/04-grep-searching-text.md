@@ -2,93 +2,139 @@
 
 ## Goal
 
-Search text files by exact text, case-insensitive text, inverted matches, recursive search, regular expressions, extracted matches, counts, and matching filenames.
+Use `grep` to find matching lines, ignore case, show line numbers, invert matches, search directories, extract matching text, count matches, and list matching files.
 
 ## Why this matters
 
-`grep` is the fastest way to answer common questions about logs and configs: what failed, where a value appears, and how often it happened.
+When you inspect logs or configs, you usually start with questions like "where did this fail?", "which files mention this host?", or "how often does this code appear?"
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Required files are in `logs/` and `configs/`.
+You will use `logs/` and `configs/`.
 
 ## Mental model
 
-`grep` reads lines and prints lines that match. Options change what counts as a match or what gets printed.
+`grep PATTERN FILE...` reads lines and prints the lines that match `PATTERN`.
+
+Default behavior:
+
+- Input is checked one line at a time.
+- A line is printed if it contains the pattern.
+- With multiple files, `grep` usually prefixes matches with filenames.
 
 ## Commands introduced
 
-- `grep`
-- `grep -i`
-- `grep -n`
-- `grep -v`
-- `grep -r`
-- `grep -E`
-- `grep -o`
-- `grep -c`
-- `grep -l`
+```sh
+grep PATTERN FILE
+grep -i PATTERN FILE
+grep -n PATTERN FILE
+grep -v PATTERN FILE
+grep -R PATTERN DIR
+grep -E PATTERN FILE
+grep -o PATTERN FILE
+grep -c PATTERN FILE
+grep -l PATTERN FILE
+```
 
-## Exercise 1: Smallest useful version
+Option meanings:
 
-Find error lines:
+- `-i`: ignore case.
+- `-n`: show line numbers.
+- `-v`: invert the match; print lines that do not match.
+- `-R`: search recursively through a directory.
+- `-E`: use extended regular expressions.
+- `-o`: print only the matched part, not the whole line.
+- `-c`: print a count of matching lines.
+- `-l`: print filenames that contain at least one match.
+- `-h`: suppress filename prefixes when searching multiple files.
+
+## Exercise 1: Find error lines
+
+Run:
 
 ```sh
 grep -h 'level=ERROR' logs/*.log > out/errors.txt
+cat out/errors.txt
 ```
 
-## Exercise 2: Add one option
+Read it left to right:
 
-Search case-insensitively for failed events:
+- `grep` searches.
+- `-h` hides filenames so the output contains only log lines.
+- `'level=ERROR'` is the pattern.
+- `logs/*.log` searches top-level log files.
+- `>` saves matches to `out/errors.txt`.
+
+## Exercise 2: Add case-insensitive search and line numbers
+
+Run:
 
 ```sh
 grep -hi 'failed' logs/*.log > out/failed-events.txt
-```
-
-Show line numbers in one log:
-
-```sh
 grep -n 'failed' logs/auth.log
 ```
 
-## Exercise 3: Combine with previous knowledge
+What changed:
 
-Extract error codes and count them:
+- `-hi` combines `-h` and `-i`: hide filenames and ignore case.
+- `-n` shows where each match appears in one file.
+
+## Exercise 3: Extract and count error codes
+
+Run:
 
 ```sh
 grep -h -o 'code=E[0-9][0-9]*' logs/*.log | sort | uniq -c > out/error-codes.txt
 cat out/error-codes.txt
 ```
 
-## Exercise 4: Realistic task
+The pattern means:
 
-List config files containing a deprecated host:
+- `code=E` matches literal text.
+- `[0-9]` matches one digit.
+- `[0-9]*` matches zero or more additional digits.
+
+The pipeline means:
+
+- `grep -o` prints only codes such as `code=E42`.
+- `sort` groups identical codes next to each other.
+- `uniq -c` counts adjacent repeated lines.
+
+## Exercise 4: List config files containing a deprecated host
+
+Run:
 
 ```sh
 grep -R -l 'old-db.internal' configs > out/deprecated-files.txt
 cat out/deprecated-files.txt
 ```
 
+What to notice:
+
+- `-R` searches inside `configs/` and its subdirectories.
+- `-l` prints only filenames, which is useful when you plan a later edit.
+
 ## Challenge
 
-Find all log lines that are not `INFO`, then save them to `out/not-info.log`.
+Find all top-level log lines that are not `INFO`, then save them to `out/not-info.log`.
 
-## Common mistakes
+Hint: use `-v`.
 
-- Forgetting quotes around patterns that contain shell metacharacters.
-- Using `grep -r` from too high in the filesystem.
-- Expecting `grep -c` to count every match; it counts matching lines per file.
+## When it goes wrong
 
-## GNU/Linux vs macOS notes
+- If you forget quotes around a pattern containing `*`, `[`, or spaces, the shell may interpret it before `grep` sees it.
+- If `grep -c` prints one count per file, that is normal. It counts matching lines for each input file.
+- If recursive search returns too much, search a narrower directory first.
 
-Avoid `grep -P` for this course. Use `grep -E` for extended regular expressions that work on GNU/Linux and macOS.
+## Compatibility notes
 
-## Bash vs zsh notes
-
-This lesson works the same in Bash and zsh because `grep`, `sort`, and `uniq` are external commands.
+Avoid `grep -P` in this course. It is GNU-specific and is not available in the default macOS `grep`. Use `grep -E` for the regular expressions taught here.
 
 ## Check yourself
 

@@ -2,89 +2,130 @@
 
 ## Goal
 
-Locate files and directories by name, type, size, modification time, emptiness, and safe command execution.
+Use `find` to locate files and directories by name, type, emptiness, size, age, and content-related follow-up commands.
 
 ## Why this matters
 
-Real projects have many files. `find` lets you locate exactly the files you want before acting on them.
+`grep` finds text inside files. `find` finds paths. Many real tasks need both: first locate the files, then inspect or process them.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Required files are in `logs/`, `messy/`, and `configs/`.
+You will use `logs/`, `messy/`, and `configs/`.
 
 ## Mental model
 
-`find` walks a directory tree and tests each path. Start with `-print` previews before adding actions.
+`find START TESTS ACTIONS` walks a directory tree.
+
+Example:
+
+```sh
+find logs -name '*.log' -type f -print
+```
+
+- `logs` is where the walk starts.
+- `-name '*.log'` keeps paths whose names match the pattern.
+- `-type f` keeps regular files.
+- `-print` prints matching paths.
+
+If you omit an action, many `find` versions print by default, but writing `-print` makes your intent clear.
 
 ## Commands introduced
 
-- `find . -name`
-- `find . -iname`
-- `find . -type f`
-- `find . -type d`
-- `find . -size`
-- `find . -mtime`
-- `find . -empty`
-- `find . -exec`
-- `find . -print0`
+```sh
+find . -name PATTERN
+find . -iname PATTERN
+find . -type f
+find . -type d
+find . -size SIZE
+find . -mtime DAYS
+find . -empty
+find . -exec COMMAND {} \;
+find . -print0
+```
 
-## Exercise 1: Smallest useful version
+Option meanings:
 
-Find log files:
+- `-name`: match a filename pattern exactly as written.
+- `-iname`: match a filename pattern case-insensitively.
+- `-type f`: regular files only.
+- `-type d`: directories only.
+- `-size`: match file size.
+- `-mtime`: match modification time in days.
+- `-empty`: empty files or empty directories.
+- `-exec ... {} \;`: run a command for each matched path; `{}` is replaced by the path.
+- `-print0`: print paths separated by a null byte for safe use with `xargs -0`.
+
+## Exercise 1: Find log files
+
+Run:
 
 ```sh
-find logs -name '*.log' -type f | sort > out/log-files.txt
+find logs -name '*.log' -type f -print | sort > out/log-files.txt
 cat out/log-files.txt
 ```
 
-## Exercise 2: Add one option
+Why the quotes matter: `'*.log'` must be passed to `find`. If you write `*.log` unquoted, the shell may expand it before `find` runs.
 
-Find empty files:
+## Exercise 2: Find empty files
+
+Run:
 
 ```sh
-find messy -type f -empty | sort > out/empty-files.txt
+find messy -type f -empty -print | sort > out/empty-files.txt
 cat out/empty-files.txt
 ```
 
-## Exercise 3: Combine with previous knowledge
+This finds files that contain zero bytes. A file with a blank-looking line is not empty; it contains a newline.
 
-Preview temporary and backup files:
+## Exercise 3: Preview cleanup candidates
+
+Run:
 
 ```sh
 find messy -type f \( -name '*.tmp' -o -name '*.bak' -o -name '*~' \) -print | sort > out/cleanup-preview.txt
 cat out/cleanup-preview.txt
 ```
 
-## Exercise 4: Realistic task
+What the expression means:
 
-Find config files that mention the deprecated database host:
+- `\(` and `\)` group the name tests. The backslashes stop the shell from treating parentheses specially.
+- `-o` means OR.
+- The command prints candidates only; it does not delete them.
+
+## Exercise 4: Combine `find` with `grep`
+
+Run:
 
 ```sh
 find configs -type f -exec grep -l 'old-db.internal' {} \; | sort > out/find-deprecated-configs.txt
 cat out/find-deprecated-configs.txt
 ```
 
+What each special piece means:
+
+- `-exec grep -l ... {} \;` runs `grep -l` once per found file.
+- `{}` is replaced with the current path.
+- `\;` marks the end of the command passed to `-exec`.
+
 ## Challenge
 
 Find directories under `messy/` and save them to `out/messy-directories.txt`.
 
-## Common mistakes
+## When it goes wrong
 
-- Forgetting to quote `*.log`, which lets the shell expand it too early.
-- Adding delete actions before previewing with `-print`.
-- Forgetting to escape parentheses as `\(` and `\)` in many shells.
+- If `find` returns nothing, check the start directory first: `find messy -maxdepth 1 -print`.
+- If parentheses cause a shell error, make sure they are escaped as `\(` and `\)`.
+- If filenames with spaces break a later command, use `find ... -print0` and a tool that understands null-delimited input.
 
-## GNU/Linux vs macOS notes
+## Compatibility notes
 
-`find -size` units and some predicates vary. `-name`, `-type`, `-empty`, `-exec`, and `-print0` are safe for these exercises on GNU/Linux and macOS.
-
-## Bash vs zsh notes
-
-Quote find patterns in both shells. zsh is stricter about unmatched globs.
+The tests used in the exercises work on GNU/Linux and macOS. Some advanced `-size`, `-mtime`, and `-printf` examples found online are not portable; check your local `man find`.
 
 ## Check yourself
 

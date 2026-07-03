@@ -2,35 +2,50 @@
 
 ## Goal
 
-Apply the course by completing capstone investigations with minimal hints.
+Apply the course by producing clear reports and one automation script from the sandbox data.
 
 ## Why this matters
 
-Real terminal work rarely says which exact command to use. You define the question, build the pipeline, inspect results, and write a clear output.
+Real work does not usually tell you which exact command to run. You define the question, inspect the data, build a pipeline, and save an answer someone else can read.
 
 ## Before you start
 
+Run:
+
 ```sh
 cd sandbox
-```
-
-Create a directory for final outputs:
-
-```sh
 mkdir -p out/final
 ```
 
 ## Mental model
 
-Work iteratively. Save intermediate files if they help. Prefer readable pipelines over dense one-liners.
+For each challenge:
 
-## Commands introduced
+1. Write the question in plain language.
+2. Find the relevant files.
+3. Build and inspect one command at a time.
+4. Save output under `out/final/`.
+5. Include enough context that another person can understand the report.
 
-No new commands. Use the tools from previous lessons.
+You are not being graded on cleverness. Prefer readable commands and clear output.
 
-## Exercise 1: Smallest useful version
+## Commands reused
 
-Log investigation. Create `out/final/log-investigation.md` with:
+Use the tools from previous lessons:
+
+```sh
+find grep sed awk sort uniq cut tr wc du tar xargs
+```
+
+## Exercise 1: Log investigation
+
+Create:
+
+```text
+out/final/log-investigation.md
+```
+
+Include:
 
 - top failed users;
 - top IPs;
@@ -38,54 +53,91 @@ Log investigation. Create `out/final/log-investigation.md` with:
 - first and last timestamp;
 - services with most errors.
 
-## Exercise 2: Add one option
+Start with separate exploratory commands. Example shape:
 
-Config migration. Create `out/final/config-migration.md` and `out/final/migrated-configs/`:
+```sh
+grep -h 'status=failed' logs/*.log | grep -o 'user=[^ ]*'
+```
 
-- find deprecated hostnames;
-- copy affected configs;
-- replace values safely in the copies;
-- produce a summary report.
+Then add `cut`, `sort`, `uniq -c`, and `sort -nr` after the extraction looks right.
 
-## Exercise 3: Combine with previous knowledge
+## Exercise 2: Config migration
 
-Disk cleanup audit. Create `out/final/cleanup-audit.md` with:
+Create:
+
+```text
+out/final/config-migration.md
+out/final/migrated-configs/
+```
+
+Include:
+
+- files containing deprecated hostnames;
+- copied configs that need migration;
+- replacements applied to the copies only;
+- a short summary of what changed.
+
+Important: do not edit files under `configs/` directly. Work on copies.
+
+## Exercise 3: Disk cleanup audit
+
+Create:
+
+```text
+out/final/cleanup-audit.md
+```
+
+Include:
 
 - largest paths;
 - temp files;
 - backup files;
-- deletion plan that does not delete originals.
+- a deletion plan that does not delete originals.
 
-## Exercise 4: Realistic task
+The output should read like a plan you could review before taking action.
 
-CSV business report. Create `out/final/csv-business-report.md` with:
+## Exercise 4: CSV business report
+
+Create:
+
+```text
+out/final/csv-business-report.md
+```
+
+Include:
 
 - expenses by department;
 - duplicate users;
 - missing fields;
 - sorted sales totals.
 
-## Challenge
+Build each section separately, then combine them with command grouping.
 
-Scripted automation. Write `out/final/project-audit.sh` that creates a complete project audit report from sandbox data.
+## Challenge: Scripted automation
 
-## Common mistakes
+Write:
 
-- Skipping written output and leaving only terminal history.
-- Deleting original files during cleanup planning.
-- Ignoring filenames with spaces in final scripts.
+```text
+out/final/project-audit.sh
+```
 
-## GNU/Linux vs macOS notes
+The script should create a Markdown audit report from sandbox data. It should:
 
-Avoid GNU-only flags unless you include alternatives in your report.
+- use a Bash shebang;
+- validate that required directories exist;
+- create `out/final/` if needed;
+- write a single report file;
+- keep cleanup actions as previews only.
 
-## Bash vs zsh notes
+## When it goes wrong
 
-If you write a script with Bash arrays, mark it Bash-specific and use `#!/usr/bin/env bash`.
+- If a report is hard to read, add headings and blank lines. Output quality matters.
+- If one giant pipeline is hard to debug, split it into smaller commands first.
+- If your script only works from one directory, either document that or validate the current directory at startup.
 
 ## Check yourself
 
-Read each final output as if another person will use it. It should explain what you checked, what command shape you used, and what you found.
+Read each final output as if another person will use it. It should say what you checked, what you found, and where any migrated or generated files are.
 
 ## Next lesson
 

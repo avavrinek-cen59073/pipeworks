@@ -2,35 +2,53 @@
 
 ## Goal
 
-Create a Bash script with a shebang, executable permissions, variables, quoting, command substitution, exit codes, and strict mode.
+Write a small Bash script that validates input, quotes variables, reports errors clearly, and exits with useful status codes.
 
 ## Why this matters
 
-Scripts turn repeatable terminal workflows into reliable tools.
+A script is a command you can repeat. A good script explains what it needs and fails before doing confusing work.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Required files are in `logs/`.
+You will create `out/log-summary.sh`.
 
 ## Mental model
 
-A script is a text file interpreted by a shell. The shebang chooses the interpreter. Quoting keeps data intact.
+A shell script is a text file interpreted by a shell. The first line, called the shebang, tells the operating system which interpreter to use:
 
-## Commands introduced
+```sh
+#!/usr/bin/env bash
+```
 
-- `#!/usr/bin/env bash`
-- `chmod +x`
-- variables
-- quoting
-- command substitution
-- exit codes
-- `set -euo pipefail`
+This script will use Bash, even if your interactive shell is zsh.
 
-## Exercise 1: Smallest useful version
+## Syntax introduced
+
+```sh
+#!/usr/bin/env bash
+set -euo pipefail
+variable=value
+"$variable"
+${1:-}
+if [ condition ]; then ... fi
+exit 2
+```
+
+What these pieces mean:
+
+- `set -euo pipefail`: stricter error behavior. `-e` exits on many failures, `-u` rejects unset variables, and `pipefail` catches failures inside pipelines.
+- `log_file=${1:-}`: set `log_file` to the first argument, or empty if no first argument exists.
+- `"$log_file"`: quote the variable so paths with spaces stay one argument.
+- `>&2`: write a message to stderr.
+- `exit 2`: stop the script with status 2. Many scripts use 2 for usage errors.
+
+## Exercise 1: Create the script
 
 Create `out/log-summary.sh` with this content:
 
@@ -54,49 +72,57 @@ printf 'ERROR lines: '
 grep -c 'level=ERROR' "$log_file"
 ```
 
-## Exercise 2: Add one option
+Read the script before running it. The two `if` blocks validate the input before `grep` runs.
 
-Make it executable:
+## Exercise 2: Make it executable
+
+Run:
 
 ```sh
 chmod +x out/log-summary.sh
 ```
 
-## Exercise 3: Combine with previous knowledge
+What it means: `chmod +x` adds execute permission so the file can be run as a command.
 
-Run it:
+## Exercise 3: Run it with a real log
+
+Run:
 
 ```sh
 out/log-summary.sh logs/app-2026-06-01.log > out/log-summary-output.txt
 cat out/log-summary-output.txt
 ```
 
-## Exercise 4: Realistic task
+The log path becomes `$1` inside the script.
 
-Test the missing-input path:
+## Exercise 4: Test missing input
+
+Run:
 
 ```sh
 out/log-summary.sh > out/log-summary-missing.txt 2>&1 || printf 'script rejected missing input\n'
 cat out/log-summary-missing.txt
 ```
 
+What this teaches:
+
+- The script should reject bad usage.
+- `2>&1` captures stderr and stdout in one file.
+- `||` runs the right side only if the script exits non-zero.
+
 ## Challenge
 
 Add a second count for `WARN` lines.
 
-## Common mistakes
+## When it goes wrong
 
-- Forgetting `chmod +x`.
-- Using `$1` when no argument was provided while `set -u` is enabled.
-- Leaving variables unquoted.
+- If the script says "Permission denied", run `chmod +x out/log-summary.sh`.
+- If `set -u` complains about `$1`, use `${1:-}` when an argument may be missing.
+- If a filename with spaces breaks, check that every variable expansion is quoted.
 
-## GNU/Linux vs macOS notes
+## Compatibility notes
 
-The script uses portable Bash and common external commands.
-
-## Bash vs zsh notes
-
-This is a Bash script. Run it directly after `chmod +x`, or with `bash out/log-summary.sh ...`.
+This is a Bash script. Run it as `out/log-summary.sh` after `chmod +x`, or explicitly with `bash out/log-summary.sh ...`.
 
 ## Check yourself
 

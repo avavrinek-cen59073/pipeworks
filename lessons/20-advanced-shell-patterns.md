@@ -2,39 +2,57 @@
 
 ## Goal
 
-Use robust quoting, Bash arrays, traps, temporary directories, cleanup on exit, strict mode tradeoffs, command grouping, subshells, and process substitution.
+Use temporary directories, traps, arrays, command grouping, subshells, and strict-mode tradeoffs to write safer Bash scripts.
 
 ## Why this matters
 
-Advanced shell work is less about clever one-liners and more about writing scripts that fail safely and clean up after themselves.
+Advanced shell scripting is not about making commands shorter. It is about making failure safer and making scripts understandable after you come back later.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Use `out/advanced-report.sh` for this lesson.
+You will create `out/advanced-report.sh`.
 
 ## Mental model
 
-Scripts have resources: arguments, files, temporary directories, and child commands. Robust scripts validate inputs and clean resources even when something fails.
+Robust scripts manage resources:
 
-## Commands introduced
+- inputs;
+- outputs;
+- temporary files;
+- cleanup;
+- error handling.
 
-- robust quoting
-- Bash arrays
-- `trap`
-- temporary directories
-- cleanup on exit
-- strict mode tradeoffs
-- command grouping
-- subshells
-- process substitution
+If a script creates a temporary directory, it should remove that directory whether the script succeeds or fails.
 
-## Exercise 1: Smallest useful version
+## Syntax introduced
 
-Create a temporary workspace:
+```sh
+mktemp -d
+trap cleanup EXIT
+array=(one two three)
+"${array[@]}"
+{ command1; command2; } > file
+( cd dir && command )
+```
+
+What these pieces mean:
+
+- `mktemp -d`: create a unique temporary directory.
+- `trap cleanup EXIT`: run `cleanup` when the script exits.
+- `array=(...)`: Bash array.
+- `"${array[@]}"`: expand array elements safely as separate arguments.
+- `{ ...; } > file`: group commands and redirect their combined output.
+- `( ... )`: run commands in a subshell so directory changes do not affect the parent shell.
+
+## Exercise 1: Create and remove a temporary workspace
+
+Run:
 
 ```sh
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/pipeworks.XXXXXX")
@@ -42,9 +60,15 @@ printf '%s\n' "$tmp_dir" > out/temp-workspace.txt
 rm -rf "$tmp_dir"
 ```
 
-## Exercise 2: Add one option
+What it means:
 
-Create `out/advanced-report.sh` with cleanup:
+- `$(...)` captures command output.
+- `${TMPDIR:-/tmp}` uses `$TMPDIR` if set, otherwise `/tmp`.
+- The `XXXXXX` part is replaced by `mktemp` to make a unique path.
+
+## Exercise 2: Add cleanup with a trap
+
+Create `out/advanced-report.sh`:
 
 ```sh
 #!/usr/bin/env bash
@@ -61,20 +85,22 @@ grep -h 'level=ERROR' logs/*.log > "$tmp_dir/errors.log"
 wc -l "$tmp_dir/errors.log"
 ```
 
-## Exercise 3: Combine with previous knowledge
+Why this is safer: `cleanup` runs even if a later command fails.
 
-Add a Bash array of report sections:
+## Exercise 3: Use a Bash array
+
+Add this to the script or run it interactively in Bash:
 
 ```sh
 sections=(errors warnings failures)
 printf '%s\n' "${sections[@]}"
 ```
 
-Clearly mark this as Bash-specific.
+Arrays are useful when you need a list where each item must remain separate.
 
-## Exercise 4: Realistic task
+## Exercise 4: Group commands into one report
 
-Use command grouping to create one report:
+Run:
 
 ```sh
 {
@@ -84,25 +110,24 @@ Use command grouping to create one report:
   printf '\n## Deprecated configs\n'
   grep -R -l 'old-db.internal' configs
 } > out/advanced-report.md
+cat out/advanced-report.md
 ```
+
+The braces let one redirection apply to the whole block.
 
 ## Challenge
 
-Compare Bash arrays with a portable newline-delimited list. Explain which one you would use for paths with spaces.
+Compare a Bash array with a newline-delimited list for storing filenames. Which one is safer for filenames with spaces? When would `find -print0` be safer than both?
 
-## Common mistakes
+## When it goes wrong
 
-- Forgetting to quote `"$tmp_dir"`.
-- Using arrays in a script declared with `#!/bin/sh`.
-- Assuming process substitution works in every shell.
+- If cleanup removes the wrong path, print the temp path to stderr before deleting and quote `"$tmp_dir"`.
+- If an array script is run with `sh`, it will fail. Use a Bash shebang.
+- If strict mode exits earlier than expected, inspect which command returned non-zero and decide whether that failure is acceptable.
 
-## GNU/Linux vs macOS notes
+## Compatibility notes
 
-`mktemp -d "${TMPDIR:-/tmp}/name.XXXXXX"` works on GNU/Linux and macOS.
-
-## Bash vs zsh notes
-
-Bash arrays and zsh arrays differ. This lesson's script examples are Bash-specific.
+Bash arrays are Bash-specific. zsh has arrays too, but indexing and behavior differ. The scripts in this lesson should use `#!/usr/bin/env bash`.
 
 ## Check yourself
 

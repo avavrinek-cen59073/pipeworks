@@ -6,51 +6,80 @@ Create, list, extract, and compress archives with `tar`, `gzip`, and optional `z
 
 ## Why this matters
 
-Archives are common for backups, logs, releases, and transferring groups of files safely.
+Archives are how directories become single files for backups, transfers, releases, and log bundles. Listing before extracting prevents surprises.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Required files are in `reports/` and `archives/`.
+You will use `reports/`, `logs/`, and `archives/`.
 
 ## Mental model
 
-An archive groups files. Compression makes bytes smaller. `.tar.gz` usually means a tar archive compressed with gzip.
+Archive and compression are separate ideas:
+
+- An archive groups files together.
+- Compression makes data smaller.
+
+A `.tar` file is an archive. A `.tar.gz` file is usually a tar archive compressed with gzip.
 
 ## Commands introduced
 
-- `tar -cf`
-- `tar -tf`
-- `tar -xf`
-- `tar -czf`
-- `tar -xzf`
-- `gzip`
-- `gunzip`
-- optional: `zip`, `unzip`
+```sh
+tar -cf ARCHIVE PATH
+tar -tf ARCHIVE
+tar -xf ARCHIVE
+tar -czf ARCHIVE PATH
+tar -xzf ARCHIVE
+gzip FILE
+gunzip FILE.gz
+zip
+unzip
+```
 
-## Exercise 1: Smallest useful version
+Option meanings:
 
-Create a tar archive of reports:
+- `tar -c`: create an archive.
+- `tar -t`: list archive contents.
+- `tar -x`: extract archive contents.
+- `tar -f FILE`: use this archive filename.
+- `tar -z`: use gzip compression.
+- `gzip FILE`: replace `FILE` with `FILE.gz`.
+- `gunzip FILE.gz`: restore the compressed file.
+
+## Exercise 1: Create an archive
+
+Run:
 
 ```sh
 tar -cf out/reports.tar reports
+ls -l out/reports.tar
 ```
 
-## Exercise 2: Add one option
+What it means:
 
-List archive contents:
+- `-c` creates.
+- `-f out/reports.tar` names the archive file.
+- `reports` is the directory being archived.
+
+## Exercise 2: List before extracting
+
+Run:
 
 ```sh
 tar -tf out/reports.tar > out/reports-archive-list.txt
 cat out/reports-archive-list.txt
 ```
 
-## Exercise 3: Combine with previous knowledge
+Listing tells you what paths the archive contains. This matters because extraction recreates those paths.
 
-Extract into a target directory:
+## Exercise 3: Extract into a target directory
+
+Run:
 
 ```sh
 mkdir -p out/extracted-reports
@@ -58,32 +87,32 @@ tar -xf out/reports.tar -C out/extracted-reports
 find out/extracted-reports -type f | sort
 ```
 
-## Exercise 4: Realistic task
+What `-C` does: it changes to the target directory before extraction. Without it, files extract into your current directory.
 
-Create a compressed log archive:
+## Exercise 4: Create a compressed archive
+
+Run:
 
 ```sh
 tar -czf out/logs.tar.gz logs
 tar -tzf out/logs.tar.gz | head
 ```
 
+The added `z` means gzip compression. The list command also needs `z` because the archive is compressed.
+
 ## Challenge
 
-Compress `reports/incident-001.txt` with `gzip`, then restore it with `gunzip`. Work on a copy under `out/`.
+Copy `reports/incident-001.txt` to `out/`, compress the copy with `gzip`, then restore it with `gunzip`.
 
-## Common mistakes
+## When it goes wrong
 
-- Extracting into the current directory without checking archive contents.
-- Forgetting `-C` when you want a specific extraction target.
-- Confusing `tar -tf` for listing with `tar -xf` for extracting.
+- If extraction puts files in the wrong place, you probably omitted `-C`.
+- If `tar -tf` cannot read a `.tar.gz`, use `tar -tzf`.
+- If `gzip` makes the original filename disappear, that is normal: it replaces `file` with `file.gz`.
 
-## GNU/Linux vs macOS notes
+## Compatibility notes
 
-The `tar` flags in this lesson work on GNU/Linux and macOS.
-
-## Bash vs zsh notes
-
-These external commands work the same in Bash and zsh.
+The `tar` flags used here work on GNU/Linux and macOS. `zip` and `unzip` are optional in this course because they may not be installed everywhere.
 
 ## Check yourself
 

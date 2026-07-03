@@ -2,31 +2,52 @@
 
 ## Goal
 
-Refactor script logic into functions with clear validation, usage, logging, and error handling.
+Organize a Bash script into small functions for usage, errors, logging, validation, and processing.
 
 ## Why this matters
 
-Functions make scripts easier to read, test, and change without duplicating logic.
+Once a script grows past a few lines, structure matters. Functions make it easier to see what the script checks, what it prints, and where the real work happens.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Use scripts under `out/`.
+You will create `out/function-report.sh`.
 
 ## Mental model
 
-A function names a small piece of behavior. Keep validation, reporting, and command execution separated.
+A function is a named block of commands:
 
-## Commands introduced
+```sh
+name() {
+  commands
+}
+```
 
-- `name() { ...; }`
-- `local`
-- `return`
+Functions can receive arguments just like scripts: inside a function, `$1` is the function's first argument.
 
-## Exercise 1: Smallest useful version
+Use `return` for success/failure status. Use stdout when a function needs to output text.
+
+## Syntax introduced
+
+```sh
+name() { ...; }
+local variable=value
+return 0
+main "$@"
+```
+
+What it means:
+
+- `local` keeps a variable inside the function.
+- `main "$@"` passes all script arguments to the `main` function.
+- `die` is a common name for a function that prints an error and exits.
+
+## Exercise 1: Create a structured script
 
 Create `out/function-report.sh`:
 
@@ -58,48 +79,61 @@ main() {
 main "$@"
 ```
 
-## Exercise 2: Add one option
+Read it by function name first: usage, error handling, logging, main workflow.
 
-Make it executable and run it:
+## Exercise 2: Run the script
+
+Run:
 
 ```sh
 chmod +x out/function-report.sh
 out/function-report.sh logs/app-2026-06-02.log
 ```
 
-## Exercise 3: Combine with previous knowledge
+You should see an info message and a count.
 
-Redirect stdout and stderr separately:
+## Exercise 3: Separate data from diagnostics
+
+Run:
 
 ```sh
 out/function-report.sh logs/app-2026-06-02.log > out/function-count.txt 2> out/function-debug.txt
+cat out/function-count.txt
+cat out/function-debug.txt
 ```
 
-## Exercise 4: Realistic task
+This works because the count is printed to stdout, while `log_info` prints to stderr.
 
-Add a `print_error_lines` function that prints matching error lines after the count.
+## Exercise 4: Add a processing function
+
+Add this function:
+
+```sh
+print_error_lines() {
+  local log_file=$1
+  grep 'level=ERROR' "$log_file"
+}
+```
+
+Then call it from `main` after the count.
 
 ## Challenge
 
-Add a `validate_log_file` function and call it from `main`.
+Add a `validate_log_file` function and move the file-existence check into it.
 
-## Common mistakes
+## When it goes wrong
 
-- Using globals when a `local` variable is clearer.
-- Returning text with `return`; use stdout for text and return for status.
-- Hiding errors by redirecting everything to `/dev/null`.
+- If a variable leaks between functions, use `local`.
+- If a function uses `$1`, check whether you passed an argument to that function.
+- If logs and report data mix together, send diagnostics to stderr with `>&2`.
 
-## GNU/Linux vs macOS notes
+## Compatibility notes
 
-The Bash function syntax used here works on both systems.
-
-## Bash vs zsh notes
-
-This script is Bash-specific because it uses Bash conventions and should be run with Bash.
+This lesson uses Bash function style and `local`. Use a Bash shebang for scripts like this.
 
 ## Check yourself
 
-Confirm that stdout contains data and stderr contains the `INFO:` log line.
+Confirm that stdout contains report data and stderr contains the `INFO:` log line.
 
 ## Next lesson
 

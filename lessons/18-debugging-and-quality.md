@@ -2,85 +2,132 @@
 
 ## Goal
 
-Use syntax checks, trace mode, optional ShellCheck, and careful reviews to fix broken shell scripts.
+Debug shell scripts by checking syntax, tracing execution, fixing quoting problems, and replacing unsafe actions with previews.
 
 ## Why this matters
 
-Shell bugs often come from missing quotes, unsafe globs, unhandled arguments, and loops that break filenames.
+Shell scripts often fail for reasons that are hard to see: an empty variable, a filename with spaces, a glob that matched too much, or an error message hidden in the wrong stream.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Required scripts are in `scripts/`.
+You will inspect scripts under `scripts/` and create fixed copies under `out/`.
 
 ## Mental model
 
-Debugging is observation. First check syntax, then trace execution, then make the smallest safe fix.
+Debug in layers:
+
+1. Syntax: can Bash parse the script?
+2. Trace: what commands does Bash actually run?
+3. Data: what values are variables holding?
+4. Safety: could this command affect more files than intended?
+
+Do not start by rewriting everything. First make the bug visible.
 
 ## Commands introduced
 
-- `bash -n`
-- `bash -x`
-- optional: `shellcheck`
+```sh
+bash -n SCRIPT
+bash -x SCRIPT ARGS...
+shellcheck SCRIPT
+```
 
-## Exercise 1: Smallest useful version
+Option meanings:
 
-Run a syntax check:
+- `bash -n`: parse the script without executing it.
+- `bash -x`: print each command after expansion before running it.
+- `shellcheck`: optional external tool that points out common shell problems.
+
+## Exercise 1: Check syntax
+
+Run:
 
 ```sh
 bash -n scripts/broken-report.sh
+echo $?
 ```
 
-Syntax can pass even when logic is wrong.
+If the status is `0`, Bash can parse the script. That does not mean the script is correct.
 
-## Exercise 2: Add one option
+## Exercise 2: Trace execution
 
-Trace execution:
+Run:
 
 ```sh
 bash -x scripts/broken-report.sh logs/auth.log > out/broken-trace-output.txt 2> out/broken-trace-debug.txt || true
 ```
 
-Read the debug file.
+Then inspect:
 
-## Exercise 3: Combine with previous knowledge
+```sh
+less out/broken-trace-debug.txt
+```
 
-Copy the broken script and fix it in `out/fixed-report.sh`. Fix at least:
+What to look for:
 
-- missing argument handling;
-- unquoted variables;
-- unsafe `find` loop;
-- output path.
+- variables expanded to empty strings;
+- paths split at spaces;
+- globs such as `*.log` expanded earlier than expected;
+- commands that write outside `out/`.
 
-## Exercise 4: Realistic task
+## Exercise 3: Fix the broken report script
 
-Improve `scripts/unsafe-cleanup.sh` as `out/safe-cleanup.sh` so it:
+Copy the script:
+
+```sh
+cp scripts/broken-report.sh out/fixed-report.sh
+```
+
+Edit `out/fixed-report.sh` so it:
+
+- has `set -euo pipefail`;
+- rejects missing input;
+- quotes variables;
+- does not loop over `$(find ...)`;
+- writes output under `out/`.
+
+Then run:
+
+```sh
+bash -n out/fixed-report.sh
+bash out/fixed-report.sh logs/auth.log
+```
+
+## Exercise 4: Turn unsafe cleanup into a preview
+
+Copy the unsafe script:
+
+```sh
+cp scripts/unsafe-cleanup.sh out/safe-cleanup.sh
+```
+
+Edit `out/safe-cleanup.sh` so it:
 
 - requires a target directory;
-- refuses empty targets;
-- previews matching temp and backup files;
-- does not delete originals.
+- refuses an empty target;
+- prints temp and backup files it would affect;
+- does not delete anything.
 
 ## Challenge
 
-If `shellcheck` is installed, run it on your fixed scripts and decide which warnings matter.
+If `shellcheck` is installed, run:
 
-## Common mistakes
+```sh
+shellcheck out/fixed-report.sh out/safe-cleanup.sh
+```
 
-- Treating `bash -n` as proof the script is correct.
-- Keeping `for file in $(find ...)`.
-- Adding broad error suppression instead of fixing the cause.
+Read each warning. Do not blindly silence warnings; understand them.
 
-## GNU/Linux vs macOS notes
+## When it goes wrong
 
-`shellcheck` is optional and may not be installed by default.
-
-## Bash vs zsh notes
-
-Debug Bash scripts with Bash, even if your interactive shell is zsh.
+- If `bash -n` passes but the script fails, the problem is runtime behavior, not syntax.
+- If `bash -x` output is overwhelming, redirect stdout and stderr to separate files as shown above.
+- If a cleanup script contains `rm -rf "$target"/*`, stop and add validation plus a preview before any deletion.
 
 ## Check yourself
 

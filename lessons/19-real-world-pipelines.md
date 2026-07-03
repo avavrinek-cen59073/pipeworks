@@ -2,31 +2,58 @@
 
 ## Goal
 
-Build integrated reports from logs, configs, disk usage, CSV duplicates, cleanup previews, and incident data.
+Build useful reports by combining searching, extraction, sorting, counting, config auditing, duplicate detection, and cleanup previews.
 
 ## Why this matters
 
-Most terminal work combines several small tools into repeatable investigations.
+Real command-line work is rarely one command. You build a pipeline in stages, inspect each stage, and save the final answer.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Write all outputs to `out/`.
+Write final outputs to `out/`.
 
 ## Mental model
 
-Start with a narrow question, build a pipeline one stage at a time, inspect each stage, then save the final result.
+Build pipelines incrementally:
 
-## Commands introduced
+1. Start with the smallest command that returns relevant lines.
+2. Add one transformation.
+3. Inspect the output.
+4. Add counting or sorting.
+5. Save the final output.
 
-This lesson combines previous commands: `grep`, `find`, `sort`, `uniq`, `cut`, `awk`, `du`, `sed`, and redirection.
+Do not write a long pipeline from memory and hope it is correct.
 
-## Exercise 1: Smallest useful version
+## Tools reused
 
-Create a log failure report:
+This lesson combines:
+
+```sh
+grep
+sed
+cut
+sort
+uniq
+find
+awk
+du
+```
+
+## Exercise 1: Create a failure report
+
+First inspect the raw matches:
+
+```sh
+grep -h 'status=failed' logs/*.log | head
+```
+
+Then build the report:
 
 ```sh
 grep -h 'status=failed' logs/*.log \
@@ -37,18 +64,33 @@ grep -h 'status=failed' logs/*.log \
 cat out/failure-report.txt
 ```
 
-## Exercise 2: Add one option
+Important pieces:
 
-Create a config audit:
+- `sed -E` enables grouped regular expressions.
+- `([^ ]+)` captures one or more non-space characters.
+- `\1` and `\2` reuse the captured user and code.
+- `sort | uniq -c | sort -nr` creates a frequency table.
+
+## Exercise 2: Audit deprecated config values
+
+Run:
 
 ```sh
 grep -R -n 'old-db.internal' configs > out/config-audit.txt
 cat out/config-audit.txt
 ```
 
-## Exercise 3: Combine with previous knowledge
+What it gives you:
 
-Detect duplicate CSV users:
+- filename;
+- line number;
+- full matching line.
+
+That is enough context to plan a safe migration.
+
+## Exercise 3: Detect duplicate CSV users
+
+Run:
 
 ```sh
 cut -d, -f1 csv/duplicate-users.csv \
@@ -58,9 +100,11 @@ cut -d, -f1 csv/duplicate-users.csv \
 cat out/duplicate-users-report.txt
 ```
 
-## Exercise 4: Realistic task
+This reuses a pattern from Lesson 08. The value of repetition is that you start recognizing report shapes.
 
-Generate a disk cleanup preview:
+## Exercise 4: Generate a cleanup plan
+
+Run:
 
 ```sh
 find messy -type f \( -name '*.tmp' -o -name '*.bak' -o -name '*~' \) -print \
@@ -68,23 +112,25 @@ find messy -type f \( -name '*.tmp' -o -name '*.bak' -o -name '*~' \) -print \
 cat out/cleanup-plan.txt
 ```
 
+This is deliberately a plan, not a deletion command.
+
 ## Challenge
 
-Create `out/incident-report.md` with sections for top failed users, top IPs, unique error codes, first and last timestamp, and services with most errors.
+Create `out/incident-report.md` with sections for:
 
-## Common mistakes
+- top failed users;
+- top IPs;
+- unique error codes;
+- first and last timestamp;
+- services with most errors.
 
-- Building a long pipeline without checking intermediate output.
-- Saving reports outside `out/`.
-- Letting cleanup previews become cleanup actions too early.
+Build each section separately before grouping them into one Markdown file.
 
-## GNU/Linux vs macOS notes
+## When it goes wrong
 
-The commands here avoid GNU-only flags.
-
-## Bash vs zsh notes
-
-Backslash line continuations work in Bash and zsh. Do not add trailing spaces after `\`.
+- If a `sed` extraction returns the whole line unchanged, the pattern did not match. Test it on one sample line.
+- If counts look too high, check whether the same event appears in multiple log files.
+- If your cleanup plan contains unexpected paths, fix the `find` expression before turning it into any action.
 
 ## Check yourself
 

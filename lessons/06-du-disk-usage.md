@@ -2,13 +2,15 @@
 
 ## Goal
 
-Summarize directory and file sizes with `du` and sort the results.
+Use `du` to answer "how much space does this use?" for files and directories.
 
 ## Why this matters
 
-Disk investigations often begin with one question: what is taking space?
+When a machine or project runs out of space, you need a calm way to narrow the problem: first the whole directory, then top-level directories, then individual files.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
@@ -16,29 +18,52 @@ cd sandbox
 
 ## Mental model
 
-`du` reports disk usage for paths. Human-readable output is easier for people; numeric output is easier for scripts.
+`du` reports disk usage: how much filesystem space paths consume. That is related to file size, but not always identical because filesystems allocate space in blocks.
+
+Start broad, then narrow:
+
+```text
+all sandbox -> top-level directories -> files in one directory
+```
 
 ## Commands introduced
 
-- `du -sh`
-- `du -h`
-- `du -a`
-- `du --max-depth=1`
-- `du -d 1`
-- `sort -h`
+```sh
+du -sh PATH
+du -h PATH
+du -a PATH
+du --max-depth=1 PATH
+du -d 1 PATH
+sort -h
+```
 
-## Exercise 1: Smallest useful version
+Option meanings:
 
-Summarize the whole sandbox:
+- `-s`: summarize each argument instead of listing every child.
+- `-h`: human-readable units such as `K`, `M`, or `G`.
+- `-a`: include files as well as directories.
+- `--max-depth=1`: GNU/Linux option for one level below the start path.
+- `-d 1`: macOS/BSD option for one level below the start path.
+- `sort -h`: sort human-readable sizes.
+
+## Exercise 1: Size the sandbox
+
+Run:
 
 ```sh
 du -sh . > out/sandbox-size.txt
 cat out/sandbox-size.txt
 ```
 
-## Exercise 2: Add one option
+What each part does:
 
-Show top-level directory sizes.
+- `.` means the current directory: `sandbox`.
+- `-s` gives one summary line.
+- `-h` makes the size readable for humans.
+
+## Exercise 2: Compare top-level directories
+
+Use the command for your system.
 
 GNU/Linux:
 
@@ -52,41 +77,53 @@ macOS:
 du -h -d 1 . | sort -h > out/top-level-sizes.txt
 ```
 
-## Exercise 3: Combine with previous knowledge
+Then inspect:
 
-Find the biggest regular-looking paths under `logs/`:
+```sh
+cat out/top-level-sizes.txt
+```
+
+The important idea is not the exact size. It is learning which directory is larger than the others.
+
+## Exercise 3: Find the largest log paths
+
+Run:
 
 ```sh
 du -ah logs | sort -h | tail -n 5 > out/biggest-log-paths.txt
 cat out/biggest-log-paths.txt
 ```
 
-## Exercise 4: Realistic task
+Pipeline meaning:
 
-Compare report and log storage:
+- `du -ah logs` prints sizes for files and directories under `logs`.
+- `sort -h` sorts from smallest to largest.
+- `tail -n 5` keeps the five largest lines.
+
+## Exercise 4: Compare two areas
+
+Run:
 
 ```sh
 du -sh reports logs > out/report-vs-log-size.txt
 cat out/report-vs-log-size.txt
 ```
 
+Here `du` receives two arguments: `reports` and `logs`. It prints one summary per argument.
+
 ## Challenge
 
-Create a one-screen disk summary for `csv`, `json`, `configs`, and `reports`.
+Create `out/data-size-summary.txt` with sizes for `csv`, `json`, `configs`, and `reports`.
 
-## Common mistakes
+## When it goes wrong
 
-- Expecting exact byte counts from human-readable output.
-- Forgetting that apparent file size and disk usage are not always the same.
-- Using GNU-only `--max-depth` on macOS.
+- If `--max-depth` fails on macOS, use `-d 1`.
+- If `sort -h` is unavailable on an older system, sort without `-h` and treat it as approximate for this lesson.
+- If the sizes are tiny, that is fine. The sandbox is intentionally small; the workflow matters.
 
-## GNU/Linux vs macOS notes
+## Compatibility notes
 
-Use `du -h --max-depth=1 .` on GNU/Linux and `du -h -d 1 .` on macOS.
-
-## Bash vs zsh notes
-
-The commands are external and work the same in Bash and zsh.
+`du` is one of the commands where GNU/Linux and macOS differ. This lesson shows both top-level-depth variants because both are common in real work.
 
 ## Check yourself
 

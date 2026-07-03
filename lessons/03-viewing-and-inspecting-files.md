@@ -2,91 +2,126 @@
 
 ## Goal
 
-Inspect files with commands that show whole files, file beginnings, file endings, counts, and file types.
+Inspect text files, count lines, view only part of a file, and identify file types before processing them.
 
 ## Why this matters
 
-Before searching or transforming data, you need to know what kind of file you are looking at and how large it is.
+Good terminal work starts with inspection. Before searching, editing, or archiving a file, first learn what is inside and how large it is.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Required files are in `logs/`, `reports/`, and `archives/`.
+You will use `logs/`, `reports/`, and `archives/`.
 
 ## Mental model
 
-Inspection commands should not change files. Use them to build confidence before running commands that write or delete.
+Inspection commands should not change files. Use them to answer:
+
+- Is this file text?
+- Is it short enough to print?
+- How many lines does it have?
+- What does the beginning or end look like?
 
 ## Commands introduced
 
-- `cat`
-- `less`
-- `head`
-- `tail`
-- `wc`
-- `file`
+```sh
+cat
+less
+head
+tail
+wc
+file
+```
 
-## Exercise 1: Smallest useful version
+Command anatomy:
 
-Show a short report:
+- `cat FILE`: print the whole file. Best for short files.
+- `less FILE`: open a scrollable viewer. Press `q` to quit.
+- `head -n N FILE`: print the first `N` lines.
+- `tail -n N FILE`: print the last `N` lines.
+- `wc -l FILE`: count lines. `-l` means lines.
+- `file PATH`: guess what kind of file a path contains.
+
+## Exercise 1: Print a short file
+
+Run:
 
 ```sh
 cat reports/q1.txt
 ```
 
-## Exercise 2: Add one option
+This file is short, so `cat` is reasonable. Do not use `cat` blindly on files you have not inspected; some logs are thousands or millions of lines.
 
-Show only the beginning and end of a log:
+## Exercise 2: Read only the beginning and end
+
+Run:
 
 ```sh
 head -n 3 logs/app-2026-06-01.log
 tail -n 3 logs/app-2026-06-01.log
 ```
 
-## Exercise 3: Combine with previous knowledge
+What each part does:
 
-Count lines in log files:
+- `-n 3` means "show 3 lines".
+- `head` answers "what does this file start with?"
+- `tail` answers "what happened most recently in this file?"
+
+## Exercise 3: Count log lines
+
+Run:
 
 ```sh
 wc -l logs/*.log > out/log-line-counts.txt
 cat out/log-line-counts.txt
 ```
 
-## Exercise 4: Realistic task
+What to notice:
 
-Identify text files and archive files:
+- `logs/*.log` matches top-level log files in `logs/`.
+- `wc -l` prints line counts.
+- Because more than one file is passed, `wc` also prints a `total` line.
+
+## Exercise 4: Identify file types
+
+Run:
 
 ```sh
 file reports/q1.txt archives/* > out/file-types.txt
 cat out/file-types.txt
 ```
 
-If archives are missing, run `../tools/make-archives.sh` from the repository root, then reset the sandbox.
+`file` helps you avoid treating an archive as plain text. The exact wording can differ by system, but you should be able to tell text from archive data.
 
 ## Challenge
 
-Use `less` to open `logs/auth.log`, search inside it for `failed`, then quit.
+Open `logs/auth.log` with `less`, search for `failed`, move to the next match, and quit.
 
-## Common mistakes
+Hints inside `less`:
 
-- Using `cat` on very large files instead of `less`, `head`, or `tail`.
-- Forgetting that `wc -l logs/*.log` includes a `total` line.
-- Expecting `file` to understand every format perfectly.
+- `/failed` searches forward.
+- `n` goes to the next match.
+- `q` quits.
 
-## GNU/Linux vs macOS notes
+## When it goes wrong
 
-The output wording of `file` can differ, but the command is used the same way.
-
-## Bash vs zsh notes
-
-These external commands work the same in Bash and zsh.
+- If your terminal fills with too much text, use `less`, `head`, or `tail` instead of `cat`.
+- If `archives/*` prints the literal pattern, the archives may not exist. Run `../tools/make-archives.sh` from the repository root, then reset the sandbox.
+- If `wc -l` output surprises you, remember it counts newline-terminated lines, not "records" in every possible format.
 
 ## Check yourself
 
-Confirm that `out/log-line-counts.txt` and `out/file-types.txt` exist and contain readable output.
+Confirm these files exist and contain readable output:
+
+```sh
+out/log-line-counts.txt
+out/file-types.txt
+```
 
 ## Next lesson
 

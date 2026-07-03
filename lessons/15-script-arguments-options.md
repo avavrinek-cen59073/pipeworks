@@ -2,37 +2,57 @@
 
 ## Goal
 
-Use positional arguments, argument counts, shifting, option parsing with `case`, and usage functions.
+Parse script arguments, support simple options, print usage, and reject unknown flags.
 
 ## Why this matters
 
-Good scripts explain how to run them, reject unknown options, and support common flags.
+Scripts become easier to use when they have predictable options such as `--help`, `--count`, and `--errors-only`.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Use `out/log-tool.sh` for this lesson.
+You will work on `out/log-tool.sh`.
 
 ## Mental model
 
-Arguments are strings passed to a script. Options are just arguments with conventions. Your script decides how to interpret them.
+When a script starts:
 
-## Commands introduced
+- `$0` is the script name.
+- `$1` is the first argument.
+- `$2` is the second argument.
+- `$#` is the number of arguments.
+- `"$@"` means all arguments, preserved as separate words.
+- `shift` discards `$1` and moves the rest left.
 
-- `$1`
-- `$2`
-- `$@`
-- `$#`
-- `shift`
-- `case`
-- usage functions
+Options are just arguments by convention. Your script decides what `--count` means.
 
-## Exercise 1: Smallest useful version
+## Syntax introduced
 
-Create a script that accepts a log path and prints matching lines:
+```sh
+case "$1" in
+  --help) ... ;;
+  --count) ... ;;
+  --*) ... ;;
+esac
+shift
+usage() { ...; }
+```
+
+What it means:
+
+- `case` compares a value against patterns.
+- `--*)` matches any argument that starts with `--`.
+- `;;` ends a branch.
+- `shift` is what lets a parser move to the next argument.
+
+## Exercise 1: Start from a working script
+
+Run:
 
 ```sh
 cp scripts/parse-log.sh out/log-tool.sh
@@ -40,45 +60,62 @@ chmod +x out/log-tool.sh
 out/log-tool.sh logs/auth.log
 ```
 
-## Exercise 2: Add one option
+Why copy it? Fixture scripts should remain unchanged so you can reset and compare.
 
-Add a `--help` branch that prints usage and exits successfully.
+## Exercise 2: Add `--help`
 
-## Exercise 3: Combine with previous knowledge
+Edit `out/log-tool.sh` so this works:
 
-Add `--count` so the script prints only a count of `level=ERROR` lines.
+```sh
+out/log-tool.sh --help
+```
 
-## Exercise 4: Realistic task
+Expected behavior:
 
-Add `--errors-only` and reject unknown options with exit status 2.
+- Print a usage line.
+- Exit successfully.
+- Do not require a log file when `--help` is used.
 
-Expected usage shape:
+## Exercise 3: Add `--count`
+
+Edit the script so this works:
+
+```sh
+out/log-tool.sh --count logs/auth.log
+```
+
+Expected behavior: print only the count of `level=ERROR` lines.
+
+## Exercise 4: Add `--errors-only` and reject bad options
+
+Support this shape:
 
 ```sh
 out/log-tool.sh [--help] [--count] [--errors-only] LOGFILE
 ```
 
+Also test:
+
+```sh
+out/log-tool.sh --bad-option logs/auth.log
+echo $?
+```
+
+The script should reject the unknown option and exit non-zero.
+
 ## Challenge
 
-Support options before or after the log path without accepting multiple log paths.
+Support options before or after the log path without accepting two log paths.
 
-## Common mistakes
+## When it goes wrong
 
-- Parsing options but forgetting to `shift`.
-- Treating unknown options as filenames.
-- Printing usage to stdout for errors instead of stderr.
-
-## GNU/Linux vs macOS notes
-
-This lesson avoids non-portable `getopt` behavior.
-
-## Bash vs zsh notes
-
-The script should run with Bash because of the shebang. The concepts are similar in zsh, but syntax details can differ.
+- If the script loops forever, check whether each handled option calls `shift`.
+- If `--bad-option` is treated as a filename, add a `--*)` rejection branch.
+- If paths with spaces break, use `"$@"`, `"$1"`, and quoted variables.
 
 ## Check yourself
 
-Run these manually:
+Run:
 
 ```sh
 out/log-tool.sh --help

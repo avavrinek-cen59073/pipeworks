@@ -2,39 +2,58 @@
 
 ## Goal
 
-Inspect processes, identity, operating system information, disk free space, and optional open files.
+Inspect basic system information, start a harmless background process, find it by PID, and stop only that process.
 
 ## Why this matters
 
-Terminal work often includes checking what is running and stopping only the process you started.
+Sooner or later you will need to answer "what is running?" The safe habit is to target a specific process you understand, not kill broad groups by name.
 
 ## Before you start
+
+Run:
 
 ```sh
 cd sandbox
 ```
 
-Use only learner-created processes in this lesson.
+Only stop processes you start in this lesson.
 
 ## Mental model
 
-A process has a process ID, or PID. Prefer stopping a specific PID over broad name-based commands.
+A running program is a process. Each process has a process ID, or PID.
+
+When you run a command with `&`, the shell starts it in the background and gives you another prompt. The special variable `$!` stores the PID of the most recent background process.
 
 ## Commands introduced
 
-- `ps`
-- `pgrep`
-- `pkill`
-- `top`
-- `df`
-- `whoami`
-- `id`
-- `uname`
-- `lsof`
+```sh
+ps
+pgrep
+pkill
+top
+df
+whoami
+id
+uname
+lsof
+kill
+```
 
-## Exercise 1: Smallest useful version
+Command meanings:
 
-Inspect your identity and OS:
+- `whoami`: print your username.
+- `id`: print user and group IDs.
+- `uname -a`: print operating system/kernel information.
+- `df -h PATH`: show free disk space for the filesystem containing `PATH`.
+- `ps -p PID`: show information about one PID.
+- `kill PID`: send the default terminate signal to one process.
+- `top`: interactive process viewer; usually press `q` to quit.
+- `pgrep` and `pkill`: find or signal processes by name. Use cautiously.
+- `lsof`: list open files; optional on some systems.
+
+## Exercise 1: Save identity and OS information
+
+Run:
 
 ```sh
 whoami > out/system-info.txt
@@ -43,18 +62,26 @@ uname -a >> out/system-info.txt
 cat out/system-info.txt
 ```
 
-## Exercise 2: Add one option
+Why append? These are three separate commands contributing to one file, so the second and third commands use `>>`.
 
-Check disk free space:
+## Exercise 2: Check disk free space
+
+Run:
 
 ```sh
 df -h . > out/disk-free.txt
 cat out/disk-free.txt
 ```
 
-## Exercise 3: Combine with previous knowledge
+What it means:
 
-Start a learner-created process:
+- `df` reports filesystem space, not directory size. For directory size, use `du`.
+- `-h` prints human-readable units.
+- `.` asks about the filesystem containing the sandbox.
+
+## Exercise 3: Start, inspect, and stop a background process
+
+Run:
 
 ```sh
 sleep 300 &
@@ -62,17 +89,19 @@ sleep_pid=$!
 printf 'sleep pid: %s\n' "$sleep_pid" > out/sleep-process.txt
 ps -p "$sleep_pid" >> out/sleep-process.txt
 cat out/sleep-process.txt
-```
-
-Stop that exact process:
-
-```sh
 kill "$sleep_pid"
 ```
 
-## Exercise 4: Realistic task
+What each piece does:
 
-Run the included slow task in the background, inspect it, then stop it by PID:
+- `sleep 300 &` starts a harmless process in the background.
+- `sleep_pid=$!` saves its PID.
+- `ps -p "$sleep_pid"` inspects only that PID.
+- `kill "$sleep_pid"` stops only that process.
+
+## Exercise 4: Inspect the included slow task
+
+Run:
 
 ```sh
 scripts/slow-task.sh 300 &
@@ -81,27 +110,31 @@ ps -p "$task_pid"
 kill "$task_pid"
 ```
 
+This is the same pattern with a script instead of `sleep`.
+
 ## Challenge
 
-If `lsof` exists, use it to inspect one file you open with `less`, then quit `less`.
+If `lsof` is installed, open `reports/q1.txt` with `less` in one terminal and use `lsof` from another terminal to find the open file. Quit `less` with `q`.
 
-## Common mistakes
+## When it goes wrong
 
-- Stopping processes by broad name instead of exact PID.
-- Leaving background `sleep` processes running.
-- Treating `top` as a command that exits automatically; usually press `q`.
+- If `kill "$sleep_pid"` says "No such process", the process already exited.
+- If you forget to save `$!`, start a new harmless process rather than guessing a PID.
+- Avoid practicing with `pkill` on real process names. It can match more than you intended.
 
-## GNU/Linux vs macOS notes
+## Compatibility notes
 
-`ps` and `top` options differ across systems. `ps -p PID` is portable for this lesson. `lsof` may not be installed.
-
-## Bash vs zsh notes
-
-`$!` expands to the last background process ID in Bash and zsh.
+`ps` and `top` have many system-specific options. This lesson uses `ps -p PID` because it is widely available. `lsof` is optional.
 
 ## Check yourself
 
-Confirm that `out/system-info.txt`, `out/disk-free.txt`, and `out/sleep-process.txt` exist.
+Confirm these files exist:
+
+```sh
+out/system-info.txt
+out/disk-free.txt
+out/sleep-process.txt
+```
 
 ## Next lesson
 
