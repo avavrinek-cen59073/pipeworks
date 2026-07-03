@@ -30,7 +30,7 @@ No package installation is required for the main course.
 ## Start
 
 ```sh
-git clone <repo-url>
+git clone git@github.com:avavrinek-cen59073/pipeworks.git
 cd pipeworks
 ./tools/doctor.sh
 ./tools/reset-sandbox.sh
