@@ -37,8 +37,6 @@ cd pipeworks
 cd sandbox
 ```
 
-Do not use a fake real GitHub URL in your notes or scripts. Replace `<repo-url>` only when you know the real repository URL.
-
 ## Repository layout
 
 ```text
