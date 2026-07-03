@@ -1,0 +1,11 @@
+date,employee,department,amount,category
+2026-06-01,Alice Chen,Engineering,84.20,cloud
+2026-06-01,Bob Singh,Support,18.45,meals
+2026-06-02,Carol Diaz,Finance,120.00,training
+2026-06-02,Dina Okafor,Sales,305.50,travel
+2026-06-03,Alice Chen,Engineering,42.10,software
+2026-06-03,Frank Moore,Support,63.75,hardware
+2026-06-04,Grace Kim,Finance,22.00,meals
+2026-06-04,Hugo Reed,Sales,149.99,travel
+2026-06-05,Erin Novak,Engineering,15.00,software
+2026-06-05,Dina Okafor,Sales,44.25,meals

@@ -1,0 +1,4 @@
+Engineering 141.3
+Finance 142
+Sales 499.74
+Support 82.2

@@ -1,0 +1,6 @@
+2026-06-01T07:45:00Z level=INFO service=deploy user=ops action=start status=ok code=OK ip=10.2.0.5 version=2026.06.01 latency_ms=20
+2026-06-01T07:46:30Z level=INFO service=deploy user=ops action=migrate status=ok code=OK ip=10.2.0.5 version=2026.06.01 latency_ms=540
+2026-06-01T07:49:10Z level=WARN service=deploy user=ops action=restart status=slow code=W30 ip=10.2.0.5 version=2026.06.01 latency_ms=2000
+2026-06-02T07:40:00Z level=INFO service=deploy user=ops action=start status=ok code=OK ip=10.2.0.5 version=2026.06.02 latency_ms=21
+2026-06-02T07:41:18Z level=ERROR service=deploy user=ops action=migrate status=failed code=E88 ip=10.2.0.5 version=2026.06.02 latency_ms=3400
+2026-06-02T07:45:45Z level=INFO service=deploy user=ops action=rollback status=ok code=OK ip=10.2.0.5 version=2026.06.01 latency_ms=880

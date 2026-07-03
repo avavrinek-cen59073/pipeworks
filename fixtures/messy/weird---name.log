@@ -1,0 +1,1 @@
+2026-06-01T12:00:00Z level=INFO service=messy user=alice action=test status=ok code=OK ip=10.0.0.1 latency_ms=1

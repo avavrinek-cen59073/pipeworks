@@ -1,0 +1,9 @@
+id,name,department,role,location,status
+1001,Alice Chen,Engineering,SRE,Remote,active
+1002,Bob Singh,Support,Analyst,Chicago,active
+1003,Carol Diaz,Finance,Manager,Austin,active
+1004,Dina Okafor,Sales,Account Executive,Remote,active
+1005,Erin Novak,Engineering,Developer,Boston,inactive
+1006,Frank Moore,Support,Lead,Chicago,active
+1007,Grace Kim,Finance,Analyst,Remote,active
+1008,Hugo Reed,Sales,Account Executive,Austin,active

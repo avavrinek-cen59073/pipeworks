@@ -1,0 +1,7 @@
+[
+  {"id": "u001", "name": "Alice Chen", "department": "Engineering", "active": true},
+  {"id": "u002", "name": "Bob Singh", "department": "Support", "active": true},
+  {"id": "u003", "name": "Carol Diaz", "department": "Finance", "active": true},
+  {"id": "u004", "name": "Dina Okafor", "department": "Sales", "active": true},
+  {"id": "u005", "name": "Erin Novak", "department": "Engineering", "active": false}
+]

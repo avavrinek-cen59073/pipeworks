@@ -1,0 +1,9 @@
+id,email,name
+u001,alice@example.test,Alice Chen
+u002,bob@example.test,Bob Singh
+u003,carol@example.test,Carol Diaz
+u002,bob@example.test,Bob Singh
+u004,dina@example.test,Dina Okafor
+u005,erin@example.test,Erin Novak
+u003,carol.diaz@example.test,Carol Diaz
+u006,frank@example.test,Frank Moore
