@@ -1,5 +1,0 @@
-Draft notes
-
-- compare app and auth logs
-- confirm payment retries
-- remove this file from final archive unless requested

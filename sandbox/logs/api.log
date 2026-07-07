@@ -1,5 +1,0 @@
-2026-06-01T09:02:19Z level=ERROR service=api user=bob action=create_order status=failed code=E17 ip=10.2.1.11 path=/api/orders latency_ms=433
-2026-06-01T09:18:40Z level=INFO service=api user=alice action=get_invoice status=ok code=OK ip=10.2.1.10 path=/api/invoices/1001 latency_ms=73
-2026-06-01T09:34:22Z level=WARN service=api user=carol action=list_orders status=slow code=W12 ip=10.2.1.12 path=/api/orders latency_ms=602
-2026-06-02T08:06:29Z level=ERROR service=api user=erin action=create_order status=failed code=E17 ip=10.2.9.20 path=/api/orders latency_ms=512
-2026-06-02T09:18:12Z level=ERROR service=api user=bob action=get_invoice status=failed code=E50 ip=10.2.1.11 path=/api/invoices/404 latency_ms=387

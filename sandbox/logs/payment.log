@@ -1,6 +1,0 @@
-2026-06-01T09:15:22Z level=ERROR service=payment user=carol action=charge status=failed code=E42 ip=10.2.4.18 amount=199.00 latency_ms=842
-2026-06-01T09:16:02Z level=INFO service=payment user=carol action=charge status=ok code=OK ip=10.2.4.18 amount=199.00 latency_ms=211
-2026-06-01T11:05:44Z level=WARN service=payment user=dina action=refund status=slow code=W21 ip=10.2.4.21 amount=49.50 latency_ms=690
-2026-06-02T08:22:15Z level=ERROR service=payment user=frank action=charge status=failed code=E42 ip=10.2.4.23 amount=79.00 latency_ms=932
-2026-06-02T08:23:01Z level=ERROR service=payment user=frank action=charge status=failed code=E42 ip=10.2.4.23 amount=79.00 latency_ms=910
-2026-06-02T08:24:10Z level=INFO service=payment user=frank action=charge status=ok code=OK ip=10.2.4.23 amount=79.00 latency_ms=230

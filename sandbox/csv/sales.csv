@@ -1,9 +1,0 @@
-date,region,rep,amount,status
-2026-06-01,North,Dina,1200.00,closed
-2026-06-01,South,Hugo,980.00,closed
-2026-06-02,West,Dina,450.00,pending
-2026-06-02,North,Hugo,2100.00,closed
-2026-06-03,East,Maya,700.00,lost
-2026-06-03,South,Dina,1250.00,closed
-2026-06-04,West,Hugo,510.00,pending
-2026-06-04,East,Maya,990.00,closed

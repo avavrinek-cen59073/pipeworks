@@ -1,8 +1,0 @@
-2026-06-01T08:00:02Z level=INFO service=auth user=alice action=login status=ok code=OK ip=10.2.1.10 latency_ms=35
-2026-06-01T08:11:12Z level=WARN service=auth user=erin action=login status=failed code=W09 ip=10.2.9.20 latency_ms=103
-2026-06-01T08:12:01Z level=WARN service=auth user=erin action=login status=failed code=W09 ip=10.2.9.20 latency_ms=98
-2026-06-01T08:12:50Z level=ERROR service=auth user=erin action=lockout status=failed code=E31 ip=10.2.9.20 latency_ms=144
-2026-06-01T09:05:03Z level=INFO service=auth user=bob action=login status=ok code=OK ip=10.2.1.11 latency_ms=41
-2026-06-02T08:32:16Z level=WARN service=auth user=guest action=login status=failed code=W09 ip=10.2.8.66 latency_ms=120
-2026-06-02T08:33:07Z level=WARN service=auth user=guest action=login status=failed code=W09 ip=10.2.8.66 latency_ms=118
-2026-06-02T08:33:58Z level=ERROR service=auth user=guest action=lockout status=failed code=E31 ip=10.2.8.66 latency_ms=151

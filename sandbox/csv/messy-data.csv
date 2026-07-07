@@ -1,9 +1,0 @@
-id,name,department,score,notes
-1,Alice,Engineering,98,clean
-2,bob,support,87,lowercase department
-3,Carol,Finance,,missing score
-4,Dina,Sales,91,
-5,erin,engineering,78,lowercase name and department
-6,Frank,Support,87,duplicate score
-7,,Finance,84,missing name
-8,Hugo,Sales, 93 ,extra spaces

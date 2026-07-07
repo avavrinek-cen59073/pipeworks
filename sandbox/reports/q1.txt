@@ -1,8 +1,0 @@
-Q1 support summary
-
-Tickets opened: 184
-Tickets closed: 171
-Average first response: 42 minutes
-Top category: login issues
-
-Follow up: improve password reset documentation.

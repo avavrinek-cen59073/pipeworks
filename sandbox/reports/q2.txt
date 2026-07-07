@@ -1,8 +1,0 @@
-Q2 support summary
-
-Tickets opened: 203
-Tickets closed: 199
-Average first response: 35 minutes
-Top category: billing questions
-
-Follow up: review failed payment alerts.

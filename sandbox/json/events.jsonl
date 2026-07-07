@@ -1,5 +1,0 @@
-{"ts":"2026-06-01T08:12:27Z","level":"ERROR","service":"payment","user":"carol","status":"failed","code":"E42"}
-{"ts":"2026-06-01T09:02:19Z","level":"ERROR","service":"api","user":"bob","status":"failed","code":"E17"}
-{"ts":"2026-06-01T09:18:40Z","level":"INFO","service":"api","user":"alice","status":"ok","code":"OK"}
-{"ts":"2026-06-02T08:22:15Z","level":"ERROR","service":"payment","user":"frank","status":"failed","code":"E42"}
-{"ts":"2026-06-02T09:32:00Z","level":"WARN","service":"web","user":"guest","status":"failed","code":"W09"}

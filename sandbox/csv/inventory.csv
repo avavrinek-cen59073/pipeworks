@@ -1,9 +1,0 @@
-sku,name,category,quantity,unit_price
-A100,Keyboard,hardware,12,49.99
-A101,Mouse,hardware,0,24.99
-B200,Notebook,supplies,42,3.50
-B201,Pen,supplies,100,0.80
-C300,USB-C Cable,hardware,18,9.95
-C301,Monitor,hardware,5,229.00
-D400,Sticker Pack,marketing,250,0.15
-D401,Brochure,marketing,75,1.20

@@ -1,2 +1,0 @@
-2026-05-29T10:00:00Z level=INFO service=web user=dina action=login status=ok code=OK ip=10.2.1.14 path=/login latency_ms=40
-2026-05-29T10:21:18Z level=WARN service=payment user=dina action=refund status=slow code=W21 ip=10.2.4.21 path=/api/payments latency_ms=702

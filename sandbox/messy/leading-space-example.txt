@@ -1,1 +1,0 @@
-The name describes leading spaces. Some shells make actual leading-space names hard to see.

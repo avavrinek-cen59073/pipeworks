@@ -1,2 +1,0 @@
-2026-05-28T09:00:00Z level=INFO service=web user=alice action=login status=ok code=OK ip=10.2.1.10 path=/login latency_ms=39
-2026-05-28T09:15:18Z level=ERROR service=api user=carol action=list_orders status=failed code=E17 ip=10.2.1.12 path=/api/orders latency_ms=498
