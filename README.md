@@ -1,5 +1,7 @@
 # Pipeworks
 
+English README | [Česká verze](README.cs.md)
+
 Pipeworks is a hands-on terminal and shell course inspired by `vimtutor`: you learn by doing real work in a real terminal against local files.
 
 There is no web app, Docker container, SSH server, sudo step, paid service, or external infrastructure. Clone or download the repository, reset the sandbox, open a lesson, and practice.
@@ -40,7 +42,8 @@ cd sandbox
 ## Repository layout
 
 ```text
-lessons/    Markdown lessons
+lessons/en/ English Markdown lessons
+lessons/cs/ Czech Markdown lessons
 solutions/  Full worked solutions
 fixtures/   Clean source data used to rebuild the sandbox
 sandbox/    Your working copy for exercises
@@ -71,7 +74,13 @@ The reset script rebuilds `sandbox/` from `fixtures/` and recreates `sandbox/out
 Open lessons in order:
 
 ```sh
-less lessons/00-setup.md
+less lessons/en/00-setup.md
+```
+
+For Czech lessons:
+
+```sh
+less lessons/cs/00-setup.md
 ```
 
 Most lessons tell you to run commands from:
